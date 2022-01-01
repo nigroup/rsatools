@@ -24,7 +24,8 @@ class TestInputRDMUtils:
     def setup(self):
         self.activations = np.array([[1, 2, 3],
                                      [4, 5, 6],
-                                     [3, 2, 1]])
+                                     [3, 2, 1],
+                                     [6, 5, 4]])
         self.fpath_acts = os.path.join(self.dir_tmp, 'a.npy')
         np.save(self.fpath_acts, self.activations)
 
@@ -34,8 +35,19 @@ class TestInputRDMUtils:
             fpath_dst_ret = input_rdm_utils.calc_and_save_input_rdm(self.fpath_acts, fpath_dst_arg)
             assert_equal(fpath_dst_ret, fpath_dst_arg)
 
-    def test_calc_input_rdm_return_path(self):
-        fpath_dst_arg = os.path.join(self.dir_tmp, 'inrdm.npy')
+    def test_calc_input_rdm_shape(self):
         in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts)
-        assert_equal(in_rdm.shape[0], 3)
-        assert_equal(in_rdm.shape[1], 3)
+        print(in_rdm)
+        assert_equal(in_rdm.shape[0], 4)
+        assert_equal(in_rdm.shape[1], 4)
+
+
+    def test_calc_input_rdm_values_diag(self):
+        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts)
+        print(in_rdm)
+        for r_idx, row in enumerate(in_rdm):
+            for c_idx, el in enumerate(row):
+                if r_idx == c_idx:
+                    assert_equal(el, 0.0)
+
+
