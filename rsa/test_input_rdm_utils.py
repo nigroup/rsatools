@@ -6,8 +6,17 @@ import os
 import tempfile
 import shutil
 import numpy as np
+import tables as tb
 
 import rsa.input_rdm_utils as input_rdm_utils
+
+
+def save_to_h5(fpath_dst, values, key):
+    with tb.File(fpath_dst, "w") as f:
+        f.create_earray(f.root, key,
+                        atom=tb.Atom.from_dtype(values.dtype),
+                        obj=values,
+                        title="activation values")
 
 
 @tools.nottest
@@ -24,13 +33,13 @@ class BaseTestInputRDMUtils:
         pass
 
     def test_calc_input_rdm_shape(self):
-        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts)
+        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts, key=self.key)
         # print(in_rdm)
         assert_equal(in_rdm.shape[0], self.num_samples)
         assert_equal(in_rdm.shape[1], self.num_samples)
 
     def test_calc_input_rdm_values_diag(self):
-        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts)
+        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts, key=self.key)
         # print(in_rdm)
         for r_idx, row in enumerate(in_rdm):
             for c_idx, el in enumerate(row):
@@ -42,6 +51,7 @@ class BaseTestInputRDMUtils:
 class TestInputRDMUtils(BaseTestInputRDMUtils):
 
     def setup(self):
+        self.key = ""
         self.num_samples = 4
         self.activations = np.array([[1, 2, 3],
                                      [4, 5, 6],
@@ -53,11 +63,11 @@ class TestInputRDMUtils(BaseTestInputRDMUtils):
     def test_calc_and_save_input_rdm_return_path(self):
         for idx in range(5):
             fpath_dst_arg = os.path.join(self.dir_tmp, 'inrdm_%d.npy' % idx)
-            fpath_dst_ret = input_rdm_utils.calc_and_save_input_rdm(self.fpath_acts, fpath_dst_arg)
+            fpath_dst_ret = input_rdm_utils.calc_and_save_input_rdm(self.fpath_acts, fpath_dst_arg, key=self.key)
             assert_equal(fpath_dst_ret, fpath_dst_arg)
 
     def test_calc_input_rdm_values_offdiag(self):
-        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts)
+        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts, key=self.key)
         assert_equal(in_rdm[0, 1], 0)
         assert_equal(in_rdm[0, 2], 2)
         assert_equal(in_rdm[0, 3], 2)
@@ -66,9 +76,23 @@ class TestInputRDMUtils(BaseTestInputRDMUtils):
 
 
 @tools.istest
+class TestInputRDMUtilsHDF5(TestInputRDMUtils):
+
+    def setup(self):
+        self.key = 'values'
+        self.num_samples = 4
+        self.activations = np.array([[1, 2, 3],
+                                     [4, 5, 6],
+                                     [3, 2, 1],
+                                     [6, 5, 4]])
+        self.fpath_acts = os.path.join(self.dir_tmp, 'a.h5')
+        save_to_h5(self.fpath_acts, self.activations, self.key)
+
+@tools.istest
 class TestInputRDMUtils2D(BaseTestInputRDMUtils):
 
     def setup(self):
+        self.key = ""
         self.num_samples = 3
         self.activations = np.array([[[1, 2, 3],
                                       [4, 5, 6]],
@@ -93,3 +117,19 @@ class TestInputRDMUtils2D(BaseTestInputRDMUtils):
         assert_equal(in_rdm[0, 1], 0)
         assert_equal(in_rdm[0, 2], 2)
         assert_equal(in_rdm[1, 2], 2)
+
+
+@tools.istest
+class TestInputRDMUtils2DHDF5(TestInputRDMUtils2D):
+
+    def setup(self):
+        self.key = "values"
+        self.num_samples = 3
+        self.activations = np.array([[[1, 2, 3],
+                                      [4, 5, 6]],
+                                     [[11, 12, 13],
+                                      [14, 15, 16]],
+                                     [[16, 15, 14],
+                                      [13, 12, 11]]])
+        self.fpath_acts = os.path.join(self.dir_tmp, 'a2d.h5')
+        save_to_h5(self.fpath_acts, self.activations, self.key)
