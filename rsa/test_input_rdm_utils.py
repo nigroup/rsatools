@@ -26,7 +26,6 @@ class TestInputRDMUtils:
                                      [4, 5, 6],
                                      [3, 2, 1]])
         self.fpath_acts = os.path.join(self.dir_tmp, 'a.npy')
-        print(self.fpath_acts)
         np.save(self.fpath_acts, self.activations)
 
     def test_calc_and_save_input_rdm_return_path(self):
