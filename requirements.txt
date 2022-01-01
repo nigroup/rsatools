@@ -4,3 +4,4 @@ nose
 ###### Requirements with Version Specifiers ######
 numpy >= 1.19.2
 scipy >= 1.5.2
+pytables == 3.6.1
