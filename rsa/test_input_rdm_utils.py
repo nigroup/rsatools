@@ -37,5 +37,6 @@ class TestInputRDMUtils:
 
     def test_calc_input_rdm_return_path(self):
         fpath_dst_arg = os.path.join(self.dir_tmp, 'inrdm.npy')
-        fpath_dst_ret = input_rdm_utils.calc_input_rdm(self.fpath_acts, fpath_dst_arg)
-        assert_equal(fpath_dst_ret, fpath_dst_arg)
+        in_rdm = input_rdm_utils.calc_input_rdm(self.fpath_acts)
+        assert_equal(in_rdm.shape[0], 3)
+        assert_equal(in_rdm.shape[1], 3)
