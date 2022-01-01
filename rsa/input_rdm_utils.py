@@ -11,4 +11,4 @@ def calc_input_rdm(fpath_src_activations):
 def calc_and_save_input_rdm(fpath_src_activations, fpath_dst):
     in_rdm = calc_input_rdm(fpath_src_activations)
     np.save(fpath_dst, in_rdm)
-    return fpath_out
+    return fpath_dst
