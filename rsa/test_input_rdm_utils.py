@@ -88,6 +88,7 @@ class TestInputRDMUtilsHDF5(TestInputRDMUtils):
         self.fpath_acts = os.path.join(self.dir_tmp, 'a.h5')
         save_to_h5(self.fpath_acts, self.activations, self.key)
 
+
 @tools.istest
 class TestInputRDMUtils2D(BaseTestInputRDMUtils):
 

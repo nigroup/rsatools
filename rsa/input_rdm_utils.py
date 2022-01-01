@@ -28,3 +28,4 @@ def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key=""):
     in_rdm = calc_input_rdm(fpath_src_activations, key=key)
     np.save(fpath_dst, in_rdm)
     return fpath_dst
+
