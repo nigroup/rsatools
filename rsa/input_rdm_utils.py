@@ -2,6 +2,9 @@ import os
 import numpy as np
 
 
+from rsa.mat_utils import get_triu_off_diag_flat
+
+
 def calc_input_rdm(fpath_src_activations, key=""):
     """
     Calculate Input RDM
@@ -24,8 +27,10 @@ def calc_input_rdm(fpath_src_activations, key=""):
     return in_rdm
 
 
-def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key=""):
+def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key="", do_triu=True):
     in_rdm = calc_input_rdm(fpath_src_activations, key=key)
+    if do_triu:
+        in_rdm = get_triu_off_diag_flat(in_rdm)
     np.save(fpath_dst, in_rdm)
     return fpath_dst
 
