@@ -23,7 +23,7 @@ jobs:
       run: |
         # conda env update --file environment.yml --name base
         conda create -q -n test-env pip pytables numpy scipy tqdm
-        conda activate test-env 
+        source activate test-env 
 #    - name: Lint with flake8
 #      run: |
 #        conda install flake8
