@@ -24,7 +24,6 @@ jobs:
         # conda env update --file environment.yml --name base
         conda create -q -n test-env pip pytables numpy scipy tqdm
         source activate test-env
-        pip install coveralls
 #    - name: Lint with flake8
 #      run: |
 #        conda install flake8
@@ -33,9 +32,10 @@ jobs:
 #        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
 #        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with nose
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         source activate test-env
-        conda install -q nose
+        conda install -q nose coveralls
         nosetests --with-coverage
-        ls
-        #coveralls --verbose
+        coveralls --verbose
