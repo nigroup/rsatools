@@ -36,8 +36,9 @@ jobs:
       run: |
         source activate test-env
         echo ${{ contains('${{ matrix.python-version }}', '3.') }}
-        echo ${{ contains( ${{ matrix.python-version }}, '3.9') }}
-        echo ${{ contains( ${{ matrix.python-version }}, 3.9) }}
+        echo ${{ contains( '${{ matrix.python-version }}', '3.9') }}
+        echo ${{ contains( '${{ matrix.python-version }}', 3.9) }}
+        echo  contains( '${{ matrix.python-version }}', 3.9)
         python --version
         conda install -q nose coveralls
         nosetests --with-coverage
