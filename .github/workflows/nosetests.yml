@@ -39,11 +39,11 @@ jobs:
         conda install -q nose coveralls
         nosetests --with-coverage
     - name: Coverage
-      if: contains('${{ matrix.python-version }}', '3.9')
+      if: ${{ contains('${{ matrix.python-version }}', '3.9') }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        contains('${{ matrix.python-version }}', '3.9')
+        echo ${{ contains('${{ matrix.python-version }}', '3.9') }}
         python --version
         source activate test-env
         coveralls --service=github --verbose
