@@ -44,4 +44,6 @@ jobs:
     - name: Coverage
       if: "${{ matrix.python-version }}, '3.9')"
       run: |
+        python --version
+        source activate test-env
         coveralls --service=github --verbose
