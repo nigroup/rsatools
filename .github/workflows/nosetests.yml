@@ -42,7 +42,7 @@ jobs:
         conda install -q nose coveralls
         nosetests --with-coverage
     - name: Coverage
-      if: "${{ matrix.python-version }}, '3.9')"
+      if: "${{ matrix.python-version }}, 3.9)"
       run: |
         python --version
         source activate test-env
