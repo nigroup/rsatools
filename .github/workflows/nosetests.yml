@@ -37,4 +37,5 @@ jobs:
         source activate test-env
         conda install -y --quiet nose
         nosetests --with-coverage
+        ls
         #coveralls --verbose
