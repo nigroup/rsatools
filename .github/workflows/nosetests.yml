@@ -38,4 +38,4 @@ jobs:
         source activate test-env
         conda install -q nose coveralls
         nosetests --with-coverage
-        coveralls --verbose
+        coveralls --service=github --verbose
