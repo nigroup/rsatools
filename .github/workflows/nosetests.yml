@@ -23,7 +23,8 @@ jobs:
       run: |
         # conda env update --file environment.yml --name base
         conda create -q -n test-env pip pytables numpy scipy tqdm
-        source activate test-env 
+        source activate test-env
+        pip install coveralls
 #    - name: Lint with flake8
 #      run: |
 #        conda install flake8
@@ -37,4 +38,5 @@ jobs:
         which python
         ls
         conda install nose
-        nosetests
+        nosetests --with-coverage
+        overalls --verbose
