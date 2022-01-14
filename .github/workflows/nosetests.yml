@@ -1,6 +1,6 @@
 name: nosetests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-linux:
@@ -37,4 +37,4 @@ jobs:
         source activate test-env
         conda install -y --quiet nose
         nosetests --with-coverage
-        coveralls --verbose
+        #coveralls --verbose
