@@ -35,7 +35,7 @@ jobs:
     - name: Test with nose
       run: |
         source activate test-env
-        conda install -y --quiet nose
+        conda install -q nose
         nosetests --with-coverage
         ls
         #coveralls --verbose
