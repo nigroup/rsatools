@@ -1,0 +1,15 @@
+[report]
+exclude_lines =
+  pragma: no cover
+  def __repr__
+  if self.debug:
+  if settings.DEBUG
+  if __name__ == .__main__.:
+[run]
+relative_files = True
+omit =
+  build.py
+  fabfile.py
+  setup.py
+  tests/*
+  */test*.py
