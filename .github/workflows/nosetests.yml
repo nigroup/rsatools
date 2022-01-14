@@ -38,21 +38,27 @@ jobs:
         python --version
         conda install -q nose coveralls
         nosetests --with-coverage
-    - name: Coveralls
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        parallel: true
-        flag-name: Unit Testing
+    #- name: Coveralls
+      #uses: AndreMiras/coveralls-python-action@develop
+      #with:
+        #parallel: true
+        #flag-name: Unit Testing
+    - name: Coveralls Parallel
+          uses: coverallsapp/github-action@master
+          with:
+            github-token: ${{ secrets.github_token }}
+            flag-name: run-${{ matrix.test_number }}
+            parallel: true
         
-  coveralls_finish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+  #coveralls_finish:
+    #needs: build
+    #runs-on: ubuntu-latest
+    #steps:
+    #- name: Coveralls Finished
+      #uses: AndreMiras/coveralls-python-action@develop
+      #with:
+        #github-token: ${{ secrets.GITHUB_TOKEN }}
+        #parallel-finished: true
     #- name: Coverage
       #if: startsWith( ${{ matrix.python-version }}, '3.9' )
       #env:
@@ -62,3 +68,12 @@ jobs:
         #python --version
         #source activate test-env
         #coveralls --service=github --verbose
+    finish:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+        - name: Coveralls Finished
+          uses: coverallsapp/github-action@master
+          with:
+            github-token: ${{ secrets.github_token }}
+            parallel-finished: true
