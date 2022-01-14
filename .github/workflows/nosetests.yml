@@ -38,6 +38,7 @@ jobs:
         python --version
         conda install -q nose coveralls
         nosetests --with-coverage
+        ls -al
         find . -name "*lcov.info*"
     #- name: Coveralls
       #uses: AndreMiras/coveralls-python-action@develop
