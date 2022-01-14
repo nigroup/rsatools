@@ -35,8 +35,8 @@ jobs:
     - name: Test with nose
       run: |
         source activate test-env
-        echo '${{ startsWith( ${{ matrix.python-version }}, '3.' ) }}'
-        echo '${{ startsWith( ${{ matrix.python-version }}, '3.9' ) }}'
+        echo ${{ startsWith( '${{ matrix.python-version }}', '3.' ) }}
+        echo ${{ startsWith( '${{ matrix.python-version }}', '3.9' ) }}
         python --version
         conda install -q nose coveralls
         nosetests --with-coverage
