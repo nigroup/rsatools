@@ -21,7 +21,6 @@ jobs:
         echo '${{ matrix.python-version }}'
         echo ${{ startsWith( '${{ matrix.python-version }}',  3. ) }}
         echo ${{ startsWith( '${{ matrix.python-version }}', '3.9' ) }}
-        echo ${{ format('{0}',  ${{ matrix.python-version }}) }}
         echo ${{ startsWith( format('{0}',  '${{ matrix.python-version }}'), '3.9' ) }}
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
