@@ -34,8 +34,8 @@ jobs:
 #        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with nose
       run: |
-        python --version
         source activate test-env
+        python --version
         conda install -q nose coveralls
         nosetests --with-coverage
     - name: Coverage
