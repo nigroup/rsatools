@@ -44,11 +44,11 @@ jobs:
         #parallel: true
         #flag-name: Unit Testing
     - name: Coveralls Parallel
-          uses: coverallsapp/github-action@master
-          with:
-            github-token: ${{ secrets.github_token }}
-            flag-name: run-${{ matrix.test_number }}
-            parallel: true
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        flag-name: run-${{ matrix.test_number }}
+        parallel: true
         
   #coveralls_finish:
     #needs: build
