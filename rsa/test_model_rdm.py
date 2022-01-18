@@ -112,24 +112,54 @@ class TestModelRDMInput2DMat:
                 self.assert_rdm_shape(rdm_c)
                 rdm_c = get_triu_off_diag_flat(rdm_c) if rdm_c.ndim > 1 else rdm_c
                 corr = spearmanr(rdm_r, rdm_c).correlation
-                assert_equal(mrdm[r, c], 1-corr)
+                assert_equal(mrdm[r, c], 1 - corr)
 
 
-class TestModelRDMUtilsInputTriuVec(TestModelRDMInput2DMat):
-
+class TestModelRDInputTriuVec(TestModelRDMInput2DMat):
 
     @staticmethod
     def assert_rdm_shape(rdm):
         assert_equal(rdm.ndim, 1)
-        assert_equal(rdm.shape[0], 3*(3-1)//2)
+        assert_equal(rdm.shape[0], 3 * (3 - 1) // 2)
 
     def setup(self):
         TestModelRDMInput2DMat.setup(self)
         in_rdm1 = np.array([[0, 1, 2],
                             [1, 0, 0.5],
                             [2, 0.5, 0]])
-        for idx in range(1,5):
+        for idx in range(1, 5):
             fp = os.path.join(self.dir_tmp, 'in%d.npy' % idx)
             in_rdm = np.load(fp)
             np.save(fp, get_triu_off_diag_flat(in_rdm))
 
+
+class ModelRDMScaled(ModelRDM):
+    def dissimilarity(self, fp_row, fp_col, idx):
+        idx, dissimilarity = ModelRDM.dissimilarity(self, fp_row, fp_col, idx)
+        return idx, 100 * dissimilarity
+
+
+class TestModelRDMCorrelation(TestModelRDInputTriuVec):
+
+    @staticmethod
+    def assert_rdm_shape(rdm):
+        assert_equal(rdm.ndim, 1)
+        assert_equal(rdm.shape[0], 3 * (3 - 1) // 2)
+
+    def test_calc_model_rdm_values(self):
+        fp_list = [self.fpath_in1,
+                   self.fpath_in2,
+                   self.fpath_in3,
+                   self.fpath_in4]
+        mrdm = ModelRDMScaled(fp_list).apply(do_disable_tqdm=True)
+        mrdm = triu_off_diag_to_mat(mrdm)
+        mrdm += mrdm.T
+        for r, fp_r in enumerate(fp_list):
+            rdm_r = np.load(fp_r)
+            self.assert_rdm_shape(rdm_r)
+            rdm_r = get_triu_off_diag_flat(rdm_r) if rdm_r.ndim > 1 else rdm_r
+            for c, fp_c in enumerate(fp_list):
+                rdm_c = np.load(fp_c)
+                self.assert_rdm_shape(rdm_c)
+                rdm_c = get_triu_off_diag_flat(rdm_c) if rdm_c.ndim > 1 else rdm_c
+                assert_equal(mrdm[r, c], 100 * (1 - spearmanr(rdm_r, rdm_c).correlation))
