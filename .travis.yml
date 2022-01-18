@@ -30,7 +30,7 @@ before_install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-env python=$TRAVIS_PYTHON_VERSION pip pytables numpy scipy
+  - conda create -q -n test-env python=$TRAVIS_PYTHON_VERSION pip pytables numpy scipy tqdm
   - conda activate test-env
   
 # command to install dependencies
