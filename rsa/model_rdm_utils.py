@@ -20,8 +20,8 @@ def get_input_rdm_flat_from_file(fpath):
 
 
 def calc_spearman_rank_corr_from_files(fpath_in_i, fpath_in_j, i, j, idx):
-    rdm_i = np.load(fpath_in_i)
-    rdm_j = np.load(fpath_in_j)
+    rdm_i = get_input_rdm_flat_from_file(fpath_in_i)
+    rdm_j = get_input_rdm_flat_from_file(fpath_in_j)
     return idx, i, j, spearmanr(rdm_i, rdm_j)
 
 
