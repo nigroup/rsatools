@@ -3,20 +3,9 @@ import tqdm
 import numpy as np
 from scipy.stats import spearmanr
 import rsa.mat_utils as mutils
+from rsa.input_rdm_utils import get_input_rdm_flat_from_file
 
 ENTRY_EMPTY = -999
-
-
-def get_input_rdm_flat_from_file(fpath):
-    rdm = np.load(fpath)
-    if rdm.ndim == 1:
-        return rdm
-    elif rdm.ndim == 2 and 1 in rdm.shape:
-        return rdm.flatten()
-    elif rdm.ndim > 2:
-        raise ValueError("File does not contain a 2D matrix (%s)" % fpath)
-    else:
-        return mutils.get_triu_off_diag_flat(rdm)
 
 
 def calc_spearman_rank_corr_from_files(fpath_in_i, fpath_in_j, i, j, idx):
