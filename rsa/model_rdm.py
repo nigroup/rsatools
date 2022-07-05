@@ -28,7 +28,7 @@ class ModelRDM:
         triu_rows, triu_cols = np.triu_indices(self.num_rows, k=1)
         self.model_rdm_triu = np.zeros((triu_rows.size,)) + ENTRY_EMPTY
 
-        with mp.Pool(processes=processes) as pool:
+        with mp.get_context("spawn").Pool(processes=processes) as pool:
             result = pool.starmap(self.dissimilarity,
                                   tqdm.tqdm(
                                       [(self.fp_list[row],
