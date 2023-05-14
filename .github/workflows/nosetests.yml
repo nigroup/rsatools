@@ -41,7 +41,7 @@ jobs:
         python --version
         conda install -q nose coveralls
 
-
+        echo "PYTHONPATH=home/runner/work/rsatools/rsa" >> $GITHUB_ENV
         nosetests --with-coverage
     - name: Coveralls
       uses: AndreMiras/coveralls-python-action@develop
