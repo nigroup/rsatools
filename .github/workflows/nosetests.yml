@@ -37,6 +37,7 @@ jobs:
         source activate test-env
         python --version
         conda install -q nose coveralls
+        echo "::set-env name=PYTHONPATH::home/runner/work/rsatools"
         nosetests --with-coverage
     - name: Coveralls
       uses: AndreMiras/coveralls-python-action@develop
