@@ -34,7 +34,7 @@ jobs:
 #        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Set my pythonpath
       run: |
-         echo "PYTHONPATH=home/runner/work/ >> $GITHUB_ENV
+         echo "PYTHONPATH=home/runner/work/rsatools" >> $GITHUB_ENV
     - name: Unit Testing
       run: |
         source activate test-env
