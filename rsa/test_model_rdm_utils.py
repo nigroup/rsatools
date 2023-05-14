@@ -6,6 +6,7 @@ import os
 import tempfile
 import shutil
 import numpy as np
+import pandas as pd
 from scipy.stats import spearmanr
 
 import rsa.model_rdm_utils as model_rdm_utils
@@ -109,24 +110,100 @@ class TestModelRDMUtilsInput2DMat:
                 self.assert_rdm_shape(rdm_c)
                 rdm_c = get_triu_off_diag_flat(rdm_c) if rdm_c.ndim > 1 else rdm_c
                 corr = spearmanr(rdm_r, rdm_c).correlation
-                assert_equal(mrdm[r, c], 1-corr)
+                assert_equal(mrdm[r, c], 1 - corr)
 
 
 class TestModelRDMUtilsInputTriuVec(TestModelRDMUtilsInput2DMat):
 
-
     @staticmethod
     def assert_rdm_shape(rdm):
         assert_equal(rdm.ndim, 1)
-        assert_equal(rdm.shape[0], 3*(3-1)//2)
+        assert_equal(rdm.shape[0], 3 * (3 - 1) // 2)
 
     def setup(self):
         TestModelRDMUtilsInput2DMat.setup(self)
         in_rdm1 = np.array([[0, 1, 2],
                             [1, 0, 0.5],
                             [2, 0.5, 0]])
-        for idx in range(1,5):
+        for idx in range(1, 5):
             fp = os.path.join(self.dir_tmp, 'in%d.npy' % idx)
             in_rdm = np.load(fp)
             np.save(fp, get_triu_off_diag_flat(in_rdm))
 
+
+class TestModelRDMUtilsModelRDM2DF:
+
+    def test_mrdm2df_rows(self):
+
+        for n in range(2, 10):
+            my_rdm = triu_off_diag_to_mat(rand_rdm(n))
+            frames = [pd.DataFrame({'A': k, 'B': k * 10}, index=[0]) for k in range(n)]
+            df = pd.concat(frames).reset_index(inplace=False, drop=True)
+            df_rdm = model_rdm_utils.mrdm2df(my_rdm.copy(), df)
+            assert_equal(len(df_rdm), n * (n - 1) // 2)
+
+    def test_mrdm2df_col_names(self):
+
+        for num_cols in range(1, 5):
+            for n in range(2, 10):
+
+                my_rdm = triu_off_diag_to_mat(rand_rdm(n))
+                frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
+                                       index=[0]) for k in range(n)]
+                df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
+                df_rdm = model_rdm_utils.mrdm2df(my_rdm.copy(), df_meta)
+
+                col_names_rdm = list(df_rdm.columns)
+                assert_equal(len(col_names_rdm), len(list(df_meta.columns)) * 2 + 1)
+
+                for col_name_meta in list(df_meta.columns):
+                    assert_true(col_name_meta + '_x' in col_names_rdm)
+                    assert_true(col_name_meta + '_y' in col_names_rdm)
+
+                assert_true('dissim' in col_names_rdm)
+
+    def test_mrdm2df_frames(self):
+
+        for num_cols in range(1, 5):
+            for n in range(2, 10):
+
+                frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
+                                       index=[0]) for k in range(n)]
+                df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
+                my_rdm_matrix = triu_off_diag_to_mat(rand_rdm(n))
+                df_rdm = model_rdm_utils.mrdm2df(my_rdm_matrix.copy(), df_meta)
+
+                rows, cols = np.triu_indices_from(my_rdm_matrix, k=1)
+                for idx, (r, c) in enumerate(zip(rows, cols)):
+                    for col_name_meta in df_meta.columns:
+                        assert_equal(df_meta.iloc[r][col_name_meta], df_rdm.iloc[idx][col_name_meta+'_x'])
+                        assert_equal(df_meta.iloc[c][col_name_meta], df_rdm.iloc[idx][col_name_meta+'_y'])
+
+    def test_mrdm2df_values_triu(self):
+
+        for num_cols in range(1, 5):
+            for n in range(2, 10):
+
+                my_rdm_triu = rand_rdm(n)
+                frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
+                                       index=[0]) for k in range(n)]
+                df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
+                df_rdm = model_rdm_utils.mrdm2df(triu_off_diag_to_mat(my_rdm_triu), df_meta)
+
+                for idx, df_row in df_rdm.iterrows():
+                    assert_equal(my_rdm_triu[idx], df_row['dissim'])
+
+    def test_mrdm2df_values_mat(self):
+
+        for num_cols in range(1, 5):
+            for n in range(2, 10):
+
+                my_rdm_matrix = triu_off_diag_to_mat(rand_rdm(n))
+                frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
+                                       index=[0]) for k in range(n)]
+                df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
+                df_rdm = model_rdm_utils.mrdm2df(my_rdm_matrix.copy(), df_meta)
+
+                rows, cols = np.triu_indices_from(my_rdm_matrix, k=1)
+                for idx, df_row in df_rdm.iterrows():
+                    assert_equal(my_rdm_matrix[rows[idx], cols[idx]], df_row['dissim'])
