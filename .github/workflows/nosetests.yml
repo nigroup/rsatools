@@ -43,14 +43,12 @@ jobs:
         source activate test-env
         python --version
         conda install -q nose coveralls
+        pwd
+        ls /home/runner/work/rsatools/rsatools
+        python -c "import sys; print('\n'.join(sys.path))"
         echo "PYTHONPATH=/home/runner/work/rsatools/rsatools" >> $GITHUB_ENV
+        python -c "import sys; print('\n'.join(sys.path))"
         nosetests --with-coverage
-#        pwd
-#        ls /home/runner/work/rsatools/rsatools
-#        python -c "import sys; print('\n'.join(sys.path))"
-#        echo "PYTHONPATH=/home/runner/work/rsatools/rsatools" >> $GITHUB_ENV
-#        python -c "import sys; print('\n'.join(sys.path))"
-#        nosetests --with-coverage
     - name: Coveralls
       uses: AndreMiras/coveralls-python-action@develop
       with:
