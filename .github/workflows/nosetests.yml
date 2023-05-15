@@ -34,14 +34,15 @@ jobs:
 #        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Set my pythonpath
       run: |
-         echo "PYTHONPATH=home/runner/work/rsatools/rsa" >> $GITHUB_ENV
+         echo "PYTHONPATH=/home/runner/work/rsatools/rsa" >> $GITHUB_ENV
     - name: Unit Testing
       run: |
         source activate test-env
         python --version
         conda install -q nose coveralls
         pwd
-        echo "PYTHONPATH=home/runner/work/rsatools/rsa" >> $GITHUB_ENV
+        ls /home/runner/work/rsatools/rsatools
+        echo "PYTHONPATH=/home/runner/work/rsatools/rsatools" >> $GITHUB_ENV
         nosetests --with-coverage
     - name: Coveralls
       uses: AndreMiras/coveralls-python-action@develop
