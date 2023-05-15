@@ -40,7 +40,7 @@ jobs:
         source activate test-env
         python --version
         conda install -q nose coveralls
-
+        pwd
         echo "PYTHONPATH=home/runner/work/rsatools/rsa" >> $GITHUB_ENV
         nosetests --with-coverage
     - name: Coveralls
