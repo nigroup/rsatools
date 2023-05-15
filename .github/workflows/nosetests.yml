@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Add conda to system path
@@ -34,7 +34,7 @@ jobs:
 #        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Set my pythonpath
       run: |
-         echo "PYTHONPATH=/home/runner/work/rsatools/rsa" >> $GITHUB_ENV
+         echo "PYTHONPATH=/home/runner/work/rsatools/rsatools" >> $GITHUB_ENV
     - name: Unit Testing
       run: |
         source activate test-env
