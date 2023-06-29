@@ -119,23 +119,6 @@ class TestModelRDMInput2DMat:
 
 
 class TestModelRDMInput2DMatNPZ(TestModelRDMInput2DMat):
-    # def setup(self):
-    #     in_rdm1 = np.array([[0, 1, 2],
-    #                         [1, 0, 0.5],
-    #                         [2, 0.5, 0]])
-    #     self.fpath_in1 = os.path.join(self.dir_tmp, 'in1.npz')
-    #     np.savez(self.fpath_in1, in_rdm=in_rdm1)
-    #     in_rdm2 = in_rdm1
-    #     self.fpath_in2 = os.path.join(self.dir_tmp, 'in2.npz')
-    #     np.savez(self.fpath_in2, in_rdm=in_rdm2)
-    #     in_rdm3 = np.array([[0, 2, 1],
-    #                         [2, 0, 0.5],
-    #                         [1, 0.5, 0]])
-    #     self.fpath_in3 = os.path.join(self.dir_tmp, 'in3.npz')
-    #     np.savez(self.fpath_in3, in_rdm=in_rdm3)
-    #     in_rdm4 = in_rdm3
-    #     self.fpath_in4 = os.path.join(self.dir_tmp, 'in4.npz')
-    #     np.savez(self.fpath_in4, in_rdm=in_rdm4)
 
     def helper_calc_model_rdm(self, flist):
 
