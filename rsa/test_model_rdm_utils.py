@@ -11,6 +11,7 @@ from scipy.stats import spearmanr
 
 import rsa.model_rdm_utils as model_rdm_utils
 from rsa.mat_utils import get_triu_off_diag_flat, triu_off_diag_to_mat
+from rsa.rdm_loader import RDMLoaderNPZ
 
 
 def rand_rdm(n):
@@ -59,6 +60,11 @@ class TestModelRDMUtilsInput2DMat:
         self.fpath_in4 = os.path.join(self.dir_tmp, 'in4.npy')
         np.save(self.fpath_in4, in_rdm4)
 
+    def helper_calc_model_rdm(self, fp_in_rdms_1, fp_in_rdms_2):
+        return model_rdm_utils.calc_model_rdm(fp_in_rdms_1,
+                                              fp_in_rdms_2,
+                                              do_disable_tqdm=True)
+
     def test_calc_model_rdm_size(self):
         for sz_in_rdm in range(3, 7):
             for num_rdms in range(2, 5):
@@ -69,7 +75,7 @@ class TestModelRDMUtilsInput2DMat:
                     fp = os.path.join(self.dir_tmp, 'rand_inrdm_%d-%d-%d.npy' % (sz_in_rdm, num_rdms, rdm_idx))
                     np.save(fp, rdm)
                     fp_in_rdms.append(fp)
-                mrdm = model_rdm_utils.calc_model_rdm(fp_in_rdms, fp_in_rdms, do_disable_tqdm=True)
+                mrdm = self.helper_calc_model_rdm(fp_in_rdms, fp_in_rdms)
                 # print(mrdm.shape)
                 assert_equal(mrdm.size, num_rdms * (num_rdms - 1) // 2)
 
@@ -78,7 +84,7 @@ class TestModelRDMUtilsInput2DMat:
                    self.fpath_in2,
                    self.fpath_in3,
                    self.fpath_in4]
-        mrdm = model_rdm_utils.calc_model_rdm(fp_list, fp_list, do_disable_tqdm=True)
+        mrdm = self.helper_calc_model_rdm(fp_list, fp_list)
         mrdm = triu_off_diag_to_mat(mrdm)
         for r, fp_r in enumerate(fp_list):
             for c, fp_c in enumerate(fp_list):
@@ -98,7 +104,7 @@ class TestModelRDMUtilsInput2DMat:
                    self.fpath_in2,
                    self.fpath_in3,
                    self.fpath_in4]
-        mrdm = model_rdm_utils.calc_model_rdm(fp_list, fp_list, do_disable_tqdm=True)
+        mrdm = self.helper_calc_model_rdm(fp_list, fp_list)
         mrdm = triu_off_diag_to_mat(mrdm)
         mrdm += mrdm.T
         for r, fp_r in enumerate(fp_list):
@@ -129,6 +135,29 @@ class TestModelRDMUtilsInputTriuVec(TestModelRDMUtilsInput2DMat):
             fp = os.path.join(self.dir_tmp, 'in%d.npy' % idx)
             in_rdm = np.load(fp)
             np.save(fp, get_triu_off_diag_flat(in_rdm))
+
+
+class TestModelRDMUtilsInput2DMatNPZ(TestModelRDMUtilsInput2DMat):
+
+    def helper_calc_model_rdm(self, fp_in_rdms_1, fp_in_rdms_2):
+        # switch from npy to npz
+        flist_npz_1 = []
+        for fp in fp_in_rdms_1:
+            fp_new = os.path.splitext(fp)[0] + '.npz'
+            np.savez(fp_new, my_in_rdm=np.load(fp))
+            flist_npz_1.append(fp_new)
+        flist_npz_2 = []
+        for fp in fp_in_rdms_2:
+            fp_new = os.path.splitext(fp)[0] + '.npz'
+            np.savez(fp_new, my_in_rdm=np.load(fp))
+            flist_npz_2.append(fp_new)
+        
+        my_loader = RDMLoaderNPZ()
+        my_loader.set_key('my_in_rdm')
+        return model_rdm_utils.calc_model_rdm(flist_npz_1,
+                                              flist_npz_2,
+                                              do_disable_tqdm=True,
+                                              loader=my_loader)
 
 
 class TestModelRDMUtilsModelRDM2DF:
@@ -176,8 +205,8 @@ class TestModelRDMUtilsModelRDM2DF:
                 rows, cols = np.triu_indices_from(my_rdm_matrix, k=1)
                 for idx, (r, c) in enumerate(zip(rows, cols)):
                     for col_name_meta in df_meta.columns:
-                        assert_equal(df_meta.iloc[r][col_name_meta], df_rdm.iloc[idx][col_name_meta+'_x'])
-                        assert_equal(df_meta.iloc[c][col_name_meta], df_rdm.iloc[idx][col_name_meta+'_y'])
+                        assert_equal(df_meta.iloc[r][col_name_meta], df_rdm.iloc[idx][col_name_meta + '_x'])
+                        assert_equal(df_meta.iloc[c][col_name_meta], df_rdm.iloc[idx][col_name_meta + '_y'])
 
     def test_mrdm2df_values_triu(self):
 

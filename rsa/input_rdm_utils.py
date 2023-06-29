@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from rsa.mat_utils import get_triu_off_diag_flat
-
+from rsa.rdm_loader import RDMLoaderNPY
 
 def calc_input_rdm(fpath_src_activations, key=""):
     """
@@ -34,8 +34,13 @@ def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key="", do_triu=Tr
     return fpath_dst
 
 
-def get_input_rdm_flat_from_file(fpath):
-    rdm = np.load(fpath)
+def get_input_rdm_flat_from_file(fpath, loader=None):
+
+    if loader is None:
+        loader = RDMLoaderNPY()
+    loader.set_path(fpath)
+    rdm = loader.load()
+
     if rdm.ndim == 1:
         return rdm
     elif rdm.ndim == 2 and 1 in rdm.shape:
@@ -44,3 +49,4 @@ def get_input_rdm_flat_from_file(fpath):
         raise ValueError("File does not contain a 2D matrix (%s)" % fpath)
     else:
         return get_triu_off_diag_flat(rdm)
+
