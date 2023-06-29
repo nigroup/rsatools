@@ -1,6 +1,7 @@
 import multiprocessing as mp
-import tqdm
+from tqdm import tqdm
 import numpy as np
+import pandas as pd
 from scipy.stats import spearmanr
 import rsa.mat_utils as mutils
 from rsa.input_rdm_utils import get_input_rdm_flat_from_file
@@ -60,7 +61,7 @@ def _calc_model_rdm_symmetric_parallel(fpath_in_all, processes, do_disable_tqdm=
     triu_rows, triu_cols = np.triu_indices(nrows, k=1)
     with mp.Pool(processes=processes) as pool:
         result = pool.starmap(calc_spearman_rank_corr_from_files,
-                              tqdm.tqdm(
+                              tqdm(
                                   [(fpath_in_all[row],
                                     fpath_in_all[col], row, col, idx)
                                    for idx, (row, col) in enumerate(zip(triu_rows, triu_cols))], total=len(triu_rows),
@@ -75,3 +76,21 @@ def _calc_model_rdm_symmetric_parallel(fpath_in_all, processes, do_disable_tqdm=
         model_rdm_triu[idx] = 1 - result_spearman.correlation
     return model_rdm_triu
 
+
+def mrdm2df(mrdm, df_meta, do_disable_tqdm=False):
+    assert (mrdm.ndim == 2)
+    num_rows, num_cols = mrdm.shape
+    assert (num_rows == num_cols)
+    assert (num_rows == len(df_meta))
+    rows, cols = np.triu_indices_from(mrdm, k=1)
+    df = df_meta.merge(df_meta, how='cross')
+    df['dissim'] = mrdm.flatten()
+    df_triu = pd.DataFrame()
+    start = 1
+    num_els = num_cols - 1
+    for idx in zip(tqdm(range(0, num_rows - 1), disable=do_disable_tqdm)):
+        dfl = df[start:start + num_els]
+        df_triu = df_triu.append(df[start:start + num_els])
+        start += num_cols + 1
+        num_els -= 1
+    return df_triu.reset_index(drop=True)
