@@ -139,6 +139,7 @@ class TestModelRDMInput2DMatNPZ(TestModelRDMInput2DMat):
 
     def helper_calc_model_rdm(self, flist):
 
+        # switch from npy to npz
         flist_npz = []
         for fp in flist:
             my_in_rdm = np.load(fp)
