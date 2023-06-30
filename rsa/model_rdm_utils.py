@@ -90,11 +90,12 @@ def mrdm2df(mrdm, df_meta, do_disable_tqdm=False):
     rows, cols = np.triu_indices_from(mrdm, k=1)
     df = df_meta.merge(df_meta, how='cross')
     df['dissim'] = mrdm.flatten()
-    df_triu = pd.DataFrame()
+    frames = []
     start = 1
     num_els = num_cols - 1
     for idx in zip(tqdm(range(0, num_rows - 1), disable=do_disable_tqdm)):
-        df_triu = df_triu.append(df[start:start + num_els])
+        frames.append(df[start:start + num_els])
         start += num_cols + 1
         num_els -= 1
+    df_triu = pd.concat(frames)
     return df_triu.reset_index(drop=True)
