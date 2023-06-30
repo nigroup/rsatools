@@ -2,7 +2,7 @@ import multiprocessing as mp
 import errno
 from pathlib import Path
 import os
-import tqdm
+import tqdm import tqdm
 import numpy as np
 from rsa.model_rdm_utils import calc_spearman_rank_corr_from_files, ENTRY_EMPTY
 from rsa.rdm_loader import RDMLoaderNPY
@@ -35,7 +35,7 @@ class ModelRDM:
 
         with mp.get_context("spawn").Pool(processes=processes) as pool:
             result = pool.starmap(self.dissimilarity,
-                                  tqdm.tqdm(
+                                  tqdm(
                                       [(self.fp_list[row],
                                         self.fp_list[col], idx)
                                        for idx, (row, col) in enumerate(zip(triu_rows, triu_cols))],
