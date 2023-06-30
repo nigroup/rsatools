@@ -8,7 +8,7 @@ import rsa.mat_utils as mat_utils
 
 def rand_symm(n):
     mat = np.random.rand(n, n)
-    mat = mat.T + mat
+    mat = (mat.T + mat) / 2.
     for r in range(n):
         mat[r, r] = 0
     return mat

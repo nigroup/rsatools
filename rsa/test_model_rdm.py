@@ -10,6 +10,7 @@ from scipy.stats import spearmanr
 
 from rsa.model_rdm import ModelRDM
 from rsa.mat_utils import get_triu_off_diag_flat, triu_off_diag_to_mat
+from rsa.rdm_loader import RDMLoaderNPZ
 
 
 def rand_rdm(n):
@@ -58,6 +59,11 @@ class TestModelRDMInput2DMat:
         self.fpath_in4 = os.path.join(self.dir_tmp, 'in4.npy')
         np.save(self.fpath_in4, in_rdm4)
 
+    def helper_calc_model_rdm(self, flist):
+        m = ModelRDM(flist)
+        mrdm = m.apply(do_disable_tqdm=True)
+        return mrdm
+
     def test_calc_model_rdm_size(self):
         for sz_in_rdm in range(3, 7):
             for num_rdms in range(2, 5):
@@ -68,8 +74,7 @@ class TestModelRDMInput2DMat:
                     fp = os.path.join(self.dir_tmp, 'rand_inrdm_%d-%d-%d.npy' % (sz_in_rdm, num_rdms, rdm_idx))
                     np.save(fp, rdm)
                     fp_in_rdms.append(fp)
-                m = ModelRDM(fp_in_rdms)
-                mrdm = m.apply(do_disable_tqdm=True)
+                mrdm = self.helper_calc_model_rdm(fp_in_rdms)
                 # print(mrdm.shape)
                 assert_equal(mrdm.size, num_rdms * (num_rdms - 1) // 2)
 
@@ -78,8 +83,7 @@ class TestModelRDMInput2DMat:
                    self.fpath_in2,
                    self.fpath_in3,
                    self.fpath_in4]
-        m = ModelRDM(fp_list)
-        mrdm = m.apply(do_disable_tqdm=True)
+        mrdm = self.helper_calc_model_rdm(fp_list)
         mrdm = triu_off_diag_to_mat(mrdm)
         for r, fp_r in enumerate(fp_list):
             for c, fp_c in enumerate(fp_list):
@@ -99,8 +103,7 @@ class TestModelRDMInput2DMat:
                    self.fpath_in2,
                    self.fpath_in3,
                    self.fpath_in4]
-        m = ModelRDM(fp_list)
-        mrdm = m.apply(do_disable_tqdm=True)
+        mrdm = self.helper_calc_model_rdm(fp_list)
         mrdm = triu_off_diag_to_mat(mrdm)
         mrdm += mrdm.T
         for r, fp_r in enumerate(fp_list):
@@ -113,6 +116,26 @@ class TestModelRDMInput2DMat:
                 rdm_c = get_triu_off_diag_flat(rdm_c) if rdm_c.ndim > 1 else rdm_c
                 corr = spearmanr(rdm_r, rdm_c).correlation
                 assert_equal(mrdm[r, c], 1 - corr)
+
+
+class TestModelRDMInput2DMatNPZ(TestModelRDMInput2DMat):
+
+    def helper_calc_model_rdm(self, flist):
+
+        # switch from npy to npz
+        flist_npz = []
+        for fp in flist:
+            my_in_rdm = np.load(fp)
+            fp_new = os.path.splitext(fp)[0] + '.npz'
+            np.savez(fp_new, in_rdm=my_in_rdm)
+            flist_npz.append(fp_new)
+
+        loader = RDMLoaderNPZ()
+        loader.set_key('in_rdm')
+        m = ModelRDM(flist_npz)
+        m.set_loader(loader)
+        mrdm = m.apply(do_disable_tqdm=True)
+        return mrdm
 
 
 class TestModelRDInputTriuVec(TestModelRDMInput2DMat):
@@ -151,7 +174,10 @@ class TestModelRDMCorrelation(TestModelRDInputTriuVec):
                    self.fpath_in2,
                    self.fpath_in3,
                    self.fpath_in4]
-        mrdm = ModelRDMScaled(fp_list).apply(do_disable_tqdm=True)
+        mrdm = self.helper_calc_model_rdm(fp_list)
+
+        m = ModelRDMScaled(fp_list)
+        mrdm = m.apply(do_disable_tqdm=True)
         mrdm = triu_off_diag_to_mat(mrdm)
         mrdm += mrdm.T
         for r, fp_r in enumerate(fp_list):
