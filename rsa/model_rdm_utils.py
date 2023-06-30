@@ -94,7 +94,6 @@ def mrdm2df(mrdm, df_meta, do_disable_tqdm=False):
     start = 1
     num_els = num_cols - 1
     for idx in zip(tqdm(range(0, num_rows - 1), disable=do_disable_tqdm)):
-        dfl = df[start:start + num_els]
         df_triu = df_triu.append(df[start:start + num_els])
         start += num_cols + 1
         num_els -= 1
