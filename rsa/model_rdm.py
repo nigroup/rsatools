@@ -2,7 +2,7 @@ import multiprocessing as mp
 import errno
 from pathlib import Path
 import os
-import tqdm import tqdm
+from tqdm import tqdm
 import numpy as np
 from rsa.model_rdm_utils import calc_spearman_rank_corr_from_files, ENTRY_EMPTY
 from rsa.rdm_loader import RDMLoaderNPY
