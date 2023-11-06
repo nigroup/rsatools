@@ -43,3 +43,13 @@ class RDMLoaderNPZ(RDMLoaderNPY):
 
         h = np.load(self.fpath)
         return h[self.key]
+
+
+class RDMLoaderInMemory(RDMLoaderNPY):
+
+    def _check_path(self):
+        # Nothing to do? Or check type for ndarray?
+        pass
+
+    def _load_rdm_from_file(self):
+        return self.fpath
