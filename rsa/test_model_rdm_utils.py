@@ -168,7 +168,7 @@ class TestModelRDMUtilsModelRDM2DF:
             my_rdm = triu_off_diag_to_mat(rand_rdm(n))
             frames = [pd.DataFrame({'A': k, 'B': k * 10}, index=[0]) for k in range(n)]
             df = pd.concat(frames).reset_index(inplace=False, drop=True)
-            df_rdm = model_rdm_utils.mrdm2df(my_rdm.copy(), df)
+            df_rdm = model_rdm_utils.mrdm2df(my_rdm.copy(), df, do_disable_tqdm=True)
             assert_equal(len(df_rdm), n * (n - 1) // 2)
 
     def test_mrdm2df_col_names(self):
@@ -180,7 +180,7 @@ class TestModelRDMUtilsModelRDM2DF:
                 frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
                                        index=[0]) for k in range(n)]
                 df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
-                df_rdm = model_rdm_utils.mrdm2df(my_rdm.copy(), df_meta)
+                df_rdm = model_rdm_utils.mrdm2df(my_rdm.copy(), df_meta, do_disable_tqdm=True)
 
                 col_names_rdm = list(df_rdm.columns)
                 assert_equal(len(col_names_rdm), len(list(df_meta.columns)) * 2 + 1)
@@ -200,7 +200,7 @@ class TestModelRDMUtilsModelRDM2DF:
                                        index=[0]) for k in range(n)]
                 df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
                 my_rdm_matrix = triu_off_diag_to_mat(rand_rdm(n))
-                df_rdm = model_rdm_utils.mrdm2df(my_rdm_matrix.copy(), df_meta)
+                df_rdm = model_rdm_utils.mrdm2df(my_rdm_matrix.copy(), df_meta, do_disable_tqdm=True)
 
                 rows, cols = np.triu_indices_from(my_rdm_matrix, k=1)
                 for idx, (r, c) in enumerate(zip(rows, cols)):
@@ -217,7 +217,7 @@ class TestModelRDMUtilsModelRDM2DF:
                 frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
                                        index=[0]) for k in range(n)]
                 df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
-                df_rdm = model_rdm_utils.mrdm2df(triu_off_diag_to_mat(my_rdm_triu), df_meta)
+                df_rdm = model_rdm_utils.mrdm2df(triu_off_diag_to_mat(my_rdm_triu), df_meta, do_disable_tqdm=True)
 
                 for idx, df_row in df_rdm.iterrows():
                     assert_equal(my_rdm_triu[idx], df_row['dissim'])
@@ -231,7 +231,7 @@ class TestModelRDMUtilsModelRDM2DF:
                 frames = [pd.DataFrame({'col%02d' % (col_idx + 1): col_idx * 10 + k for col_idx in range(num_cols)},
                                        index=[0]) for k in range(n)]
                 df_meta = pd.concat(frames).reset_index(inplace=False, drop=True)
-                df_rdm = model_rdm_utils.mrdm2df(my_rdm_matrix.copy(), df_meta)
+                df_rdm = model_rdm_utils.mrdm2df(my_rdm_matrix.copy(), df_meta, do_disable_tqdm=True)
 
                 rows, cols = np.triu_indices_from(my_rdm_matrix, k=1)
                 for idx, df_row in df_rdm.iterrows():

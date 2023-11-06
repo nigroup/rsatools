@@ -2,7 +2,7 @@ import multiprocessing as mp
 import errno
 from pathlib import Path
 import os
-import tqdm
+from tqdm import tqdm
 import numpy as np
 from rsa.model_rdm_utils import calc_spearman_rank_corr_from_files, ENTRY_EMPTY
 from rsa.rdm_loader import RDMLoaderNPY
@@ -12,9 +12,10 @@ import rsa.mat_utils as mutils
 class ModelRDM:
 
     def __init__(self, fpath_list):
-        for fp in fpath_list:
-            if not Path(fp).is_file():
-                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), fp)
+        # Oflloaded to loader, but should still check before apply if applicable with loader TODO
+        # for fp in fpath_list:
+        #     if not Path(fp).is_file():
+        #         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), fp)
         self.fp_list = fpath_list
         self.num_rows = len(fpath_list)
         self.loader = RDMLoaderNPY()
@@ -35,7 +36,7 @@ class ModelRDM:
 
         with mp.get_context("spawn").Pool(processes=processes) as pool:
             result = pool.starmap(self.dissimilarity,
-                                  tqdm.tqdm(
+                                  tqdm(
                                       [(self.fp_list[row],
                                         self.fp_list[col], idx)
                                        for idx, (row, col) in enumerate(zip(triu_rows, triu_cols))],

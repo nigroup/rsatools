@@ -10,7 +10,7 @@ from scipy.stats import spearmanr
 
 from rsa.model_rdm import ModelRDM
 from rsa.mat_utils import get_triu_off_diag_flat, triu_off_diag_to_mat
-from rsa.rdm_loader import RDMLoaderNPZ
+from rsa.rdm_loader import RDMLoaderNPZ, RDMLoaderInMemory
 
 
 def rand_rdm(n):
@@ -119,23 +119,6 @@ class TestModelRDMInput2DMat:
 
 
 class TestModelRDMInput2DMatNPZ(TestModelRDMInput2DMat):
-    # def setup(self):
-    #     in_rdm1 = np.array([[0, 1, 2],
-    #                         [1, 0, 0.5],
-    #                         [2, 0.5, 0]])
-    #     self.fpath_in1 = os.path.join(self.dir_tmp, 'in1.npz')
-    #     np.savez(self.fpath_in1, in_rdm=in_rdm1)
-    #     in_rdm2 = in_rdm1
-    #     self.fpath_in2 = os.path.join(self.dir_tmp, 'in2.npz')
-    #     np.savez(self.fpath_in2, in_rdm=in_rdm2)
-    #     in_rdm3 = np.array([[0, 2, 1],
-    #                         [2, 0, 0.5],
-    #                         [1, 0.5, 0]])
-    #     self.fpath_in3 = os.path.join(self.dir_tmp, 'in3.npz')
-    #     np.savez(self.fpath_in3, in_rdm=in_rdm3)
-    #     in_rdm4 = in_rdm3
-    #     self.fpath_in4 = os.path.join(self.dir_tmp, 'in4.npz')
-    #     np.savez(self.fpath_in4, in_rdm=in_rdm4)
 
     def helper_calc_model_rdm(self, flist):
 
@@ -150,6 +133,19 @@ class TestModelRDMInput2DMatNPZ(TestModelRDMInput2DMat):
         loader = RDMLoaderNPZ()
         loader.set_key('in_rdm')
         m = ModelRDM(flist_npz)
+        m.set_loader(loader)
+        mrdm = m.apply(do_disable_tqdm=True)
+        return mrdm
+
+class TestModelRDMInput2DMaInMemory(TestModelRDMInput2DMat):
+
+    def helper_calc_model_rdm(self, flist):
+
+        # switch from npy to in-memory
+        list_irdm = [np.load(fp) for fp in flist]
+
+        loader = RDMLoaderInMemory()
+        m = ModelRDM(list_irdm)
         m.set_loader(loader)
         mrdm = m.apply(do_disable_tqdm=True)
         return mrdm
