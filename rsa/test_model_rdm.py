@@ -10,7 +10,7 @@ from scipy.stats import spearmanr
 
 from rsa.model_rdm import ModelRDM
 from rsa.mat_utils import get_triu_off_diag_flat, triu_off_diag_to_mat
-from rsa.rdm_loader import RDMLoaderNPZ
+from rsa.rdm_loader import RDMLoaderNPZ, RDMLoaderInMemory
 
 
 def rand_rdm(n):
@@ -133,6 +133,19 @@ class TestModelRDMInput2DMatNPZ(TestModelRDMInput2DMat):
         loader = RDMLoaderNPZ()
         loader.set_key('in_rdm')
         m = ModelRDM(flist_npz)
+        m.set_loader(loader)
+        mrdm = m.apply(do_disable_tqdm=True)
+        return mrdm
+
+class TestModelRDMInput2DMaInMemory(TestModelRDMInput2DMat):
+
+    def helper_calc_model_rdm(self, flist):
+
+        # switch from npy to in-memory
+        list_irdm = [np.load(fp) for fp in flist]
+
+        loader = RDMLoaderInMemory()
+        m = ModelRDM(list_irdm)
         m.set_loader(loader)
         mrdm = m.apply(do_disable_tqdm=True)
         return mrdm

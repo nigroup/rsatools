@@ -12,9 +12,10 @@ import rsa.mat_utils as mutils
 class ModelRDM:
 
     def __init__(self, fpath_list):
-        for fp in fpath_list:
-            if not Path(fp).is_file():
-                raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), fp)
+        # Oflloaded to loader, but should still check before apply if applicable with loader TODO
+        # for fp in fpath_list:
+        #     if not Path(fp).is_file():
+        #         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), fp)
         self.fp_list = fpath_list
         self.num_rows = len(fpath_list)
         self.loader = RDMLoaderNPY()
