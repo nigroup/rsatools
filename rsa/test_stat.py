@@ -4,7 +4,7 @@ from nose.tools import assert_equal, \
 
 import numpy as np
 import rsa.rdm_utils as rdm_utils
-import rsa.stat as st
+import rsa.statistical_testing as st
 
 
 def rand_rdm(n):
