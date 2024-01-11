@@ -3,8 +3,11 @@ import numpy as np
 
 from rsa.mat_utils import get_triu_off_diag_flat
 from rsa.rdm_loader import RDMLoaderNPY
+from rsa.corr.pearson_corrcoef import PearsonCorrcoef
+from rsa.input_rdm import InputRDM
 
-def calc_input_rdm(fpath_src_activations, key=""):
+
+def calc_input_rdm(fpath_src_activations, key="", do_keep_mem_low=False):
     """
     Calculate Input RDM
 
@@ -21,21 +24,34 @@ def calc_input_rdm(fpath_src_activations, key=""):
             acts = hf.get_node('/')[key][:]
 
     num_samples = acts.shape[0]
-    acts = acts.reshape(num_samples, -1)
-    in_rdm = (1 - np.corrcoef(acts, acts, rowvar=True))[:num_samples, num_samples:]
+    if do_keep_mem_low:
+        ir = InputRDM(acts.reshape(num_samples, -1))
+        in_rdm = ir.apply(do_disable_tqdm=True)
+        from rsa.rdm_utils import triu_off_diag_vec_to_rdm
+        in_rdm = triu_off_diag_vec_to_rdm(in_rdm)
+    else:
+        # acts = acts.reshape(num_samples, -1)
+        # in_rdm = (1 - np.corrcoef(acts, acts, rowvar=True))[:num_samples, num_samples:]
+        p = PearsonCorrcoef(acts.shape)
+        in_rdm = 1 - p.calculate(acts.reshape(num_samples, -1))
+
     return in_rdm
 
 
-def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key="", do_triu=True):
-    in_rdm = calc_input_rdm(fpath_src_activations, key=key)
+def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key="", do_triu=True, do_keep_mem_low=False):
+    in_rdm = calc_input_rdm(fpath_src_activations, key=key, do_keep_mem_low=do_keep_mem_low)
     if do_triu:
         in_rdm = get_triu_off_diag_flat(in_rdm)
+        # print(in_rdm.shape)
+        # if in_rdm.ndim == 2:
+        #     in_rdm = get_triu_off_diag_flat(in_rdm)
+        # elif in_rdm.ndim > 2:
+        #     raise ValueError("Shape of input rdm is %s" % (in_rdm.shape))
     np.save(fpath_dst, in_rdm)
     return fpath_dst
 
 
 def get_input_rdm_flat_from_file(fpath, loader=None):
-
     if loader is None:
         loader = RDMLoaderNPY()
     loader.set_path(fpath)
@@ -49,4 +65,3 @@ def get_input_rdm_flat_from_file(fpath, loader=None):
         raise ValueError("File does not contain a 2D matrix (%s)" % fpath)
     else:
         return get_triu_off_diag_flat(rdm)
-
