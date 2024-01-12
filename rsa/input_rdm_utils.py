@@ -43,8 +43,12 @@ def calc_input_rdm(fpath_src_activations, key="",
     return in_rdm
 
 
-def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key="", do_triu=True, do_keep_mem_low=False):
-    in_rdm = calc_input_rdm(fpath_src_activations, key=key, do_keep_mem_low=do_keep_mem_low)
+def calc_and_save_input_rdm(fpath_src_activations, fpath_dst, key="", do_triu=True,
+                            do_keep_mem_low=False,
+                            num_processes=None):
+    in_rdm = calc_input_rdm(fpath_src_activations, key=key,
+                            do_keep_mem_low=do_keep_mem_low,
+                            num_processes=num_processes)
     if do_triu:
         in_rdm = get_triu_off_diag_flat(in_rdm)
         # print(in_rdm.shape)
