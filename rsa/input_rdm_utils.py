@@ -7,12 +7,16 @@ from rsa.corr.pearson_corrcoef import PearsonCorrcoef
 from rsa.input_rdm import InputRDM
 
 
-def calc_input_rdm(fpath_src_activations, key="", do_keep_mem_low=False):
+def calc_input_rdm(fpath_src_activations, key="",
+                   do_keep_mem_low=False,
+                   num_processes=None):
     """
     Calculate Input RDM
 
     :param fpath_src_activations: path to .npy or HDF5 file with activations
     :param key: key or field (for HDF5)
+    :param do_keep_mem_low: use a different routine for calculating the pearson linear correlation, slower but with lower memory footprint
+    :param num_processes: count of threads for parallel processing, only used in the case of do_keep_mem_low==True
     :return: Input RDM
     """
     _, ext = os.path.splitext(fpath_src_activations)
@@ -26,7 +30,8 @@ def calc_input_rdm(fpath_src_activations, key="", do_keep_mem_low=False):
     num_samples = acts.shape[0]
     if do_keep_mem_low:
         ir = InputRDM(acts.reshape(num_samples, -1))
-        in_rdm = ir.apply(do_disable_tqdm=True)
+        in_rdm = ir.apply(processes=1 if num_processes is None else num_processes,
+                          do_disable_tqdm=True)
         from rsa.rdm_utils import triu_off_diag_vec_to_rdm
         in_rdm = triu_off_diag_vec_to_rdm(in_rdm)
     else:
