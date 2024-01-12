@@ -7,5 +7,7 @@ class PearsonCorrcoef(BasePearsonLinear):
         self.num_samples = shape[0]
 
     def calculate(self, x):
-        rho = np.corrcoef(x, x, rowvar=True)
-        return rho[:self.num_samples, self.num_samples:]
+        rho = np.corrcoef(x, rowvar=True)
+        assert(rho.shape[0] == x.shape[0])
+        assert(rho.shape[1] == x.shape[0])
+        return rho
