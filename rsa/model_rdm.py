@@ -19,9 +19,18 @@ class ModelRDM:
         self.fp_list = fpath_list
         self.num_rows = len(fpath_list)
         self.loader = RDMLoaderNPY()
+        self.model_rdm_triu = None
 
     def set_loader(self, loader):
         self.loader = loader
+
+    def get_triu_rows_cols(self):
+        triu_rows, triu_cols = np.triu_indices(self.num_rows, k=1)
+        return triu_rows, triu_cols
+
+    def _init_model_rdm_triu(self):
+        triu_rows, triu_cols = self.get_triu_rows_cols()
+        self.model_rdm_triu = np.zeros((triu_rows.size,)) + ENTRY_EMPTY
 
     def dissimilarity(self, fp_row, fp_col, idx):
 
@@ -31,8 +40,9 @@ class ModelRDM:
 
     def apply(self, processes=1, do_disable_tqdm=False):
 
-        triu_rows, triu_cols = np.triu_indices(self.num_rows, k=1)
-        self.model_rdm_triu = np.zeros((triu_rows.size,)) + ENTRY_EMPTY
+        triu_rows, triu_cols = self.get_triu_rows_cols()
+        if self.model_rdm_triu is None:
+            self.model_rdm_triu = np.zeros((triu_rows.size,)) + ENTRY_EMPTY
 
         with mp.get_context("spawn").Pool(processes=processes) as pool:
             result = pool.starmap(self.dissimilarity,

@@ -1,7 +1,13 @@
 ###### Requirements without Version Specifiers ######
-nose
+nose~=1.3.7
 
 ###### Requirements with Version Specifiers ######
 numpy >= 1.19.2
 scipy >= 1.5.2
 ##pytables == 3.6.1 ## not installable via pip
+
+rsa~=4.7.2
+yaml~=0.2.5
+pyyaml~=5.4.1
+tqdm~=4.61.0
+pandas~=1.3.5

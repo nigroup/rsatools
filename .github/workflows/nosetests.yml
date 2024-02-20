@@ -23,7 +23,7 @@ jobs:
         conda init bash
     - name: Install dependencies
       run: |
-        conda create -q -n test-env python=${{ matrix.python-version }} pytables numpy scipy pandas tqdm
+        conda create -q -n test-env python=${{ matrix.python-version }} pytables numpy scipy pandas tqdm pyyaml
         source activate test-env
 #    - name: Lint with flake8
 #      run: |
