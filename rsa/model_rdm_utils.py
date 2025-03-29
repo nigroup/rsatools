@@ -60,7 +60,11 @@ def _calc_model_rdm_symmetric_sequential(fpath_in_all, loader=None):
     return model_rdm
 
 
-def _calc_model_rdm_symmetric_parallel(fpath_in_all, processes, do_disable_tqdm=False, loader=None):
+def _calc_model_rdm_symmetric_parallel(fpath_in_all,
+                                       processes,
+                                       chunksize=10,
+                                       do_disable_tqdm=False,
+                                       loader=None):
     nrows = len(fpath_in_all)
     triu_rows, triu_cols = np.triu_indices(nrows, k=1)
     with mp.Pool(processes=processes) as pool:
@@ -71,7 +75,7 @@ def _calc_model_rdm_symmetric_parallel(fpath_in_all, processes, do_disable_tqdm=
                                     loader)
                                    for idx, (row, col) in enumerate(zip(triu_rows, triu_cols))], total=len(triu_rows),
                                   disable=do_disable_tqdm),
-                              chunksize=10,
+                              chunksize=chunksize,
                               )
     model_rdm_triu = np.zeros((triu_rows.size,)) + ENTRY_EMPTY
     # for r in range(nrows):
