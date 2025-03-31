@@ -10,7 +10,7 @@ jobs:
       matrix:
         include:
           - python-version: 3.7
-            ubuntu-version: ubuntu-20.04
+            ubuntu-version: ubuntu-22.04
           - python-version: 3.8
             ubuntu-version: ubuntu-20.04
           - python-version: 3.9
