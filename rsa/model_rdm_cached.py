@@ -37,9 +37,11 @@ class ModelRDMCached(ModelRDM):
 
             self.model_rdm_triu[idx] = self.cache.get(fp_row, fp_col, ENTRY_EMPTY)
 
-    def apply(self, processes=1, do_disable_tqdm=False):
+    def apply(self, processes=1, chunksize=10, do_disable_tqdm=False):
 
-        self.model_rdm_triu = super().apply(processes=processes, do_disable_tqdm=do_disable_tqdm)
+        self.model_rdm_triu = super().apply(processes=processes,
+                                            chunksize=chunksize,
+                                            do_disable_tqdm=do_disable_tqdm)
 
         triu_rows, triu_cols = self.get_triu_rows_cols()
         for idx, (row, col) in enumerate(zip(triu_rows, triu_cols)):

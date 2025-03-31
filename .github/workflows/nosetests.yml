@@ -4,12 +4,20 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    #~ runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
       matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
-
+        include:
+          - python-version: 3.7
+            ubuntu-version: ubuntu-22.04
+          - python-version: 3.8
+            ubuntu-version: ubuntu-22.04
+          - python-version: 3.9
+            ubuntu-version: ubuntu-24.04
+          - python-version: 3.11
+            ubuntu-version: ubuntu-latest
+    runs-on: ${{ matrix.ubuntu-version }}
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}

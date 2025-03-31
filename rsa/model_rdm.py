@@ -38,7 +38,7 @@ class ModelRDM:
             idx, _, _, spearman = calc_spearman_rank_corr_from_files(fp_row, fp_col, -1, -1, idx, loader=self.loader)
             return idx, 1 - spearman.correlation
 
-    def apply(self, processes=1, do_disable_tqdm=False):
+    def apply(self, processes=1, chunksize=10, do_disable_tqdm=False):
 
         triu_rows, triu_cols = self.get_triu_rows_cols()
         if self.model_rdm_triu is None:
@@ -52,7 +52,7 @@ class ModelRDM:
                                        for idx, (row, col) in enumerate(zip(triu_rows, triu_cols))],
                                       total=len(triu_rows),
                                       disable=do_disable_tqdm),
-                                  chunksize=10,
+                                  chunksize=chunksize,
                                   )
 
         for idx, dissimilarity in result:
