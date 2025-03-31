@@ -8,14 +8,15 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        - python-version: 3.7
-          ubuntu-version: ubuntu-20.04
-        - python-version: 3.8
-          ubuntu-version: ubuntu-20.04
-        - python-version: 3.9
-          ubuntu-version: ubuntu-22.04
-        - python-version: 3.10
-          ubuntu-version: ubuntu-latest
+        include:
+          - python-version: 3.7
+            ubuntu-version: ubuntu-20.04
+          - python-version: 3.8
+            ubuntu-version: ubuntu-20.04
+          - python-version: 3.9
+            ubuntu-version: ubuntu-22.04
+          - python-version: 3.10
+            ubuntu-version: ubuntu-latest
     runs-on: ${{ matrix.ubuntu-version }}
     steps:
     - uses: actions/checkout@v3
