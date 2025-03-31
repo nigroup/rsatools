@@ -12,10 +12,10 @@ jobs:
           - python-version: 3.7
             ubuntu-version: ubuntu-22.04
           - python-version: 3.8
-            ubuntu-version: ubuntu-20.04
-          - python-version: 3.9
             ubuntu-version: ubuntu-22.04
-          - python-version: 3.11
+          - python-version: 3.9
+            ubuntu-version: ubuntu-24.04
+          - python-version: 3.12
             ubuntu-version: ubuntu-latest
     runs-on: ${{ matrix.ubuntu-version }}
     steps:
